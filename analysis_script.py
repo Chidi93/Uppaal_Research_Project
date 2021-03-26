@@ -89,7 +89,8 @@ def main():
 
   		print "RUN NUMBER: " + str(n)
   		print query
-  		
+  		print ("I am here")
+		print ("I am here")
   		#EXECUTE QUERY
   		open(query_file_name, 'w').close()
 
