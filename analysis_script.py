@@ -33,9 +33,9 @@ def parse_out(out):
 def main():
     ######################
     # CHANGE PATH HERE
-    verifyta_path = ("C:/Users/darli/Downloads/uppaal-4.1.24/uppaal-4.1.24/bin-Windows/")  # "PATH OF MAIN FOLDER OF UPPAAL" + "uppaal64-4.1.19/bin-Linux/"
-    model_path = ("C:/Users/darli/OneDrive/Documents/cps_smc/attack1/")  #PATH OF THE FOLDER OF cps_smc.xml
-    query_path =("C:/Users/darli/OneDrive/Documents/cps_smc/attack1/")  # "PATH OF THE FOLDER OF query.q"
+    verifyta_path = ("/home/chidiagbo/uppaal64-4.1.24/bin-Linux/")  # "PATH OF MAIN FOLDER OF UPPAAL" + "uppaal64-4.1.19/bin-Linux/"
+    model_path = ("/home/chidiagbo/Desktop/Uppaal_Research_Project/attack1/")  #PATH OF THE FOLDER OF cps_smc.xml
+    query_path =("/home/chidiagbo/Desktop/Uppaal_Research_Project/attack1/")  # "PATH OF THE FOLDER OF query.q"
     ######################
 
     model_name = "cps_smc_attack1.xml"
@@ -45,7 +45,7 @@ def main():
     uppaal_file_name = model_path + model_name
     query_file_name = query_path + query_name
 
-    engine_name = "verifyta.exe"
+    engine_name = "verifyta"
 
     ######################
     # CHANGE PRECISION HERE
@@ -53,7 +53,7 @@ def main():
     error = 0.01
     ######################
 
-    #################################################################################################################################
+   #################################################################################################################################
     # TO AVOID BUGS THE ANALYSIS ARE EXECUTED ON COPIES OF THE MODEL AND THE QUERY FILE
     # Make copy of uppaal file
     shutil.copy(uppaal_file_name, model_path + "copy_" + model_name)
@@ -65,9 +65,8 @@ def main():
 
     query_file_name = query_path + "copy_" + query_name
 
-    # launch_cmd = uppaal_folder + engine_name + " " + uppaal_file_name + " " + query_file_name + " -a " + str(
-     #   alpha) + " -E " + str(error)
-    launch_cmd = uppaal_folder + engine_name + " " + uppaal_file_name + " " + query_file_name
+    launch_cmd = uppaal_folder + engine_name + " " + uppaal_file_name + " " + query_file_name + " -a " + str(
+        alpha) + " -E " + str(error)
     #################################################################################################################################
 
     for n in range(1, 301):
@@ -77,14 +76,8 @@ def main():
         content = []
         with open(uppaal_file_name, "r") as uppaal_file:
             content = uppaal_file.readlines()
-            for i, s in enumerate(content):
-                if content_to_modify in s:
-                    attack_index = i
-                    break
-
-
-            #print ([i for i, s in enumerate(content) if content_to_modify in s])
-            #attack_index = [i for i, s in enumerate(content) if content_to_modify in s][0]
+            # print [i for i, s in enumerate(content) if content_to_modify in s]
+            attack_index = [i for i, s in enumerate(content) if content_to_modify in s][0]
             content[attack_index] = "const int M_ATCK = " + str(n) + ";\n"
 
         open(uppaal_file_name, 'w').close()
@@ -113,12 +106,11 @@ def main():
         result = out
 
         # PRINT ANALYSIS RESULT
-        # print out
-        # print(parse_out(out) + "\n")
-        
-        out_file = "" + "outfile.txt"
-        with open(out_file, "a") as f:
-           f.writelines(str(n) + ", " + parse_out(out))
+        #print(out)
+        output = "" + "outputFile.txt"
+        with open(output, 'a') as f:
+            f.writelines(str(n) + "," + parse_out(out))
+        #print(parse_out(out) + "\n")
 
 
 if __name__ == '__main__':
