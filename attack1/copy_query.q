@@ -1,1 +1,1 @@
-Pr([][1,130] (  safe  ))
+Pr (<>[0, 282] (ctrl.Cooling_on && c_time >=282))

@@ -14,7 +14,6 @@ const int TICK = 1;
 const double DELTA = 0.4;
 const double EPS = 0.1;
 const double DT = 1.0;
-
 double temp = 0.0;
 double sens = 0.0;
 double ctrl_sens = 0.0;
@@ -24,8 +23,11 @@ bool safe = true;
 bool deadlocks = false;
 bool alarm = false;
 
-const int M_ATCK = 126;
+const int M_ATCK = 282;
 clock c_time;
+
+//const double alpha = 0.01;
+//const double error = 0.01;
 
 //double malicious_sensed_temp = 0.0;
 
@@ -530,6 +532,10 @@ system ids, ctrl, proxy_actuator, actuator, proxy_sensor,sensor, stress_engine,e
 			</formula>
 			<comment>
 			</comment>
+		</query>
+		<query>
+			<formula>Pr(&lt;&gt; [1, 300] (not safe))</formula>
+			<comment></comment>
 		</query>
 		<query>
 			<formula>simulate 1000 [&lt;=100] {temp, ctrl_sens}

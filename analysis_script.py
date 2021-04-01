@@ -17,7 +17,7 @@ import pathlib as path
 
 
 def parse_out(out):
-    out = str(out)
+    out = str(out, 'utf-8')
     lines = out.split("\n")
     for i, s in enumerate(lines):
         if ("Pr(<> ...)" in s or "Pr(MITL ) in" in s):
@@ -25,9 +25,10 @@ def parse_out(out):
             break
     #index = [i for i, s in enumerate(lines) if ("Pr(<> ...)" in s or "Pr(MITL ) in" in s)]
     #index = index[0]
+    #print(lines)
+    #print("CHIDI: {}".format(index))
     value = lines[index].split(" ")[-1]
-
-    return value.strip("'").strip("\n").strip("\r")
+    return value
 
 
 def main():
@@ -49,8 +50,8 @@ def main():
 
     ######################
     # CHANGE PRECISION HERE
-    alpha = 0.01
-    error = 0.01
+    alpha = 0.01 #
+    error = 0.01 #
     ######################
 
    #################################################################################################################################
@@ -88,8 +89,12 @@ def main():
 
         ######################################################################
         # MODIFY QUERY HERE
-        query = "Pr([][1,{0}] (  safe  ))".format(n + 4)
-        # query = "Pr [<=1000] (<> deadlocks )""
+        #query = "Pr([][1,{0}] (safe))".format(n + 4)
+        #query = "Pr(<>[1,{0}] (not safe))".format(n + 1)
+        #query = "Pr [<=1000] (<> deadlocks )"
+        #query = "Pr (<>[0, {0}] (deadlocks))".format(n + 3)
+        #query = "Pr (<> [0, {0}](Cooling_on && global_clock >= 100))".format(n + 1)
+        query =  "Pr (<>[0, {0}] (ctrl.Cooling_on && c_time >={1}))".format(n, n)
         ######################################################################
 
         print("RUN NUMBER: " + str(n))
@@ -109,7 +114,7 @@ def main():
         #print(out)
         output = "" + "outputFile.txt"
         with open(output, 'a') as f:
-            f.writelines(str(n) + "," + parse_out(out))
+            f.writelines(str(n) + ", " + parse_out(out) + "\n")
         #print(parse_out(out) + "\n")
 
 
