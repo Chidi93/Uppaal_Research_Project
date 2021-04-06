@@ -4,9 +4,9 @@
 	<declaration>broadcast chan on, off, cool_on, cool_off, cool_on_proxy, cool_off_proxy, cool_off_ctrl, cool_on_ctrl;
 broadcast chan  read_sensor, read_sensor_proxy, ack_sensor, ack_sensor_proxy;
 
-broadcast chan stop, keep_cooling, sync_ids, high_temp;
+broadcast chan stop, keep_cooling, sync_ids, high_temp, m;
 
-broadcast chan tick;
+broadcast chan tick, drop;
 
 clock s_time;
 const int TICK = 1;
@@ -14,6 +14,8 @@ const int TICK = 1;
 const double DELTA = 0.4;
 const double EPS = 0.1;
 const double DT = 1.0;
+//const int N = 300;
+
 double temp = 0.0;
 double sens = 0.0;
 double ctrl_sens = 0.0;
@@ -23,11 +25,10 @@ bool safe = true;
 bool deadlocks = false;
 bool alarm = false;
 
-const int M_ATCK = 147;
-clock c_time;
+//int [1,300] m;
+const int M_ATCK = 1;
 
-//const double alpha = 0.01;
-//const double error = 0.01;
+clock c_time;
 
 //double malicious_sensed_temp = 0.0;
 
@@ -47,9 +48,9 @@ clock c_time;
 		<transition>
 			<source ref="id0"/>
 			<target ref="id0"/>
-			<label kind="guard" x="-92" y="-97">s_time == TICK</label>
-			<label kind="synchronisation" x="-92" y="-80">tick!</label>
-			<label kind="assignment" x="-92" y="-63">s_time := 0</label>
+			<label kind="guard" x="-42" y="-161">s_time == TICK</label>
+			<label kind="synchronisation" x="-110" y="-85">tick!</label>
+			<label kind="assignment" x="-127" y="-51">s_time := 0</label>
 			<nail x="-110" y="-127"/>
 			<nail x="127" y="-127"/>
 		</transition>
@@ -202,92 +203,180 @@ deadlocks = (temp &lt; 0 || temp &gt;= 50)</label>
 	</template>
 	<template>
 		<name>Malicious_Proxy_Actuator</name>
-		<location id="id10" x="-450" y="-119">
+		<location id="id10" x="-467" y="-340">
 			<urgent/>
 		</location>
-		<location id="id11" x="-289" y="-119">
+		<location id="id11" x="-306" y="-340">
 			<urgent/>
 		</location>
-		<location id="id12" x="17" y="-119">
+		<location id="id12" x="0" y="-340">
 			<urgent/>
 		</location>
-		<location id="id13" x="-144" y="-119">
-			<name x="-127" y="-110">_Proxy_Actuator_</name>
+		<location id="id13" x="-161" y="-340">
+			<name x="-144" y="-331">_Proxy_Actuator_</name>
 		</location>
 		<init ref="id13"/>
 		<transition>
 			<source ref="id11"/>
-			<target ref="id13"/>
-			<label kind="guard" x="-272" y="-85">c_time == M_ATCK</label>
-			<nail x="-212" y="-85"/>
+			<target ref="id10"/>
+			<label kind="guard" x="-442" y="-306">c_time&gt;M_ATCK</label>
+			<nail x="-365" y="-306"/>
+			<nail x="-416" y="-306"/>
 		</transition>
 		<transition>
 			<source ref="id11"/>
-			<target ref="id10"/>
-			<label kind="guard" x="-450" y="-85">c_time &gt; M_ATCK</label>
-			<nail x="-374" y="-85"/>
+			<target ref="id13"/>
+			<label kind="guard" x="-298" y="-306">c_time == M_ATCK</label>
+			<nail x="-238" y="-306"/>
 		</transition>
 		<transition>
 			<source ref="id10"/>
 			<target ref="id13"/>
-			<label kind="synchronisation" x="-314" y="-187">cool_on_proxy!</label>
-			<nail x="-450" y="-170"/>
-			<nail x="-144" y="-170"/>
+			<label kind="synchronisation" x="-331" y="-408">cool_on_proxy!</label>
+			<nail x="-467" y="-391"/>
+			<nail x="-161" y="-391"/>
 		</transition>
 		<transition>
 			<source ref="id11"/>
 			<target ref="id10"/>
-			<label kind="guard" x="-433" y="-144">c_time &lt; M_ATCK</label>
+			<label kind="guard" x="-450" y="-365">c_time &lt; M_ATCK</label>
 		</transition>
 		<transition>
 			<source ref="id12"/>
 			<target ref="id13"/>
-			<label kind="synchronisation" x="-102" y="-187">cool_off_proxy!</label>
-			<nail x="-68" y="-170"/>
+			<label kind="synchronisation" x="-119" y="-408">cool_off_proxy!</label>
+			<nail x="-85" y="-391"/>
 		</transition>
 		<transition>
 			<source ref="id13"/>
 			<target ref="id12"/>
-			<label kind="synchronisation" x="-110" y="-136">cool_off_ctrl?</label>
+			<label kind="synchronisation" x="-127" y="-357">cool_off_ctrl?</label>
 		</transition>
 		<transition>
 			<source ref="id13"/>
 			<target ref="id11"/>
-			<label kind="synchronisation" x="-263" y="-136">cool_on_ctrl?</label>
+			<label kind="synchronisation" x="-280" y="-357">cool_on_ctrl?</label>
 		</transition>
 	</template>
 	<template>
-		<name>Proxy_Sensor</name>
-		<location id="id14" x="0" y="93">
+		<name>Top_C_attacker</name>
+		<location id="id14" x="-119" y="-34">
+			<name x="-144" y="-110">Top_Cm</name>
 			<urgent/>
 		</location>
-		<location id="id15" x="136" y="93">
-		</location>
-		<location id="id16" x="136" y="0">
+		<location id="id15" x="-416" y="-34">
 			<urgent/>
 		</location>
-		<location id="id17" x="0" y="0">
-			<name x="-119" y="-25">_Proxy_Sensor</name>
+		<location id="id16" x="195" y="-25">
+			<urgent/>
 		</location>
-		<init ref="id17"/>
+		<location id="id17" x="-110" y="161">
+		</location>
+		<init ref="id14"/>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id14"/>
+			<label kind="synchronisation" x="-399" y="136">tick?</label>
+			<nail x="-365" y="161"/>
+			<nail x="-365" y="127"/>
+		</transition>
 		<transition>
 			<source ref="id14"/>
 			<target ref="id17"/>
-			<label kind="synchronisation" x="-144" y="42">ack_sensor_proxy!</label>
+			<label kind="guard" x="127" y="153">c_time==M_ATCK</label>
+			<label kind="synchronisation" x="127" y="127">cool_on_proxy!</label>
+			<nail x="119" y="136"/>
+			<nail x="119" y="170"/>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id17"/>
+			<label kind="guard" x="-289" y="127">c_time==M_ATCK</label>
+			<label kind="synchronisation" x="-204" y="102">drop!</label>
+			<nail x="-170" y="136"/>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id17"/>
+			<label kind="guard" x="-51" y="119">c_time==M_ATCK</label>
+			<label kind="synchronisation" x="-51" y="102">cool_off_proxy!</label>
+			<nail x="-51" y="136"/>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id14"/>
+			<label kind="synchronisation" x="25" y="-153">cool_off_proxy!</label>
+			<nail x="195" y="-127"/>
+			<nail x="8" y="-136"/>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id16"/>
+			<label kind="guard" x="-17" y="8">c_time&lt;M_ATCK</label>
+			<label kind="synchronisation" x="-17" y="-8">cool_off_ctrl?</label>
+			<nail x="17" y="-8"/>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id16"/>
+			<label kind="guard" x="0" y="-93">c_time&gt;M_ATCK</label>
+			<label kind="synchronisation" x="0" y="-110">cool_off_ctrl?</label>
+			<nail x="8" y="-68"/>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id15"/>
+			<label kind="guard" x="-399" y="17">c_time&lt;M_ATCK</label>
+			<label kind="synchronisation" x="-382" y="-8">cool_on_ctrl?</label>
+			<nail x="-272" y="0"/>
 		</transition>
 		<transition>
 			<source ref="id15"/>
 			<target ref="id14"/>
+			<label kind="synchronisation" x="-399" y="-161">cool_on_proxy!</label>
+			<nail x="-416" y="-136"/>
+			<nail x="-255" y="-136"/>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id15"/>
+			<label kind="guard" x="-365" y="-76">c_time&gt;M_ATCK</label>
+			<label kind="synchronisation" x="-365" y="-102">cool_on_ctrl?</label>
+			<nail x="-272" y="-59"/>
+		</transition>
+	</template>
+	<template>
+		<name>Proxy_Sensor</name>
+		<location id="id18" x="0" y="93">
+			<urgent/>
+		</location>
+		<location id="id19" x="136" y="93">
+		</location>
+		<location id="id20" x="136" y="0">
+			<urgent/>
+		</location>
+		<location id="id21" x="0" y="0">
+			<name x="-119" y="-25">_Proxy_Sensor</name>
+		</location>
+		<init ref="id21"/>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id21"/>
+			<label kind="synchronisation" x="-144" y="42">ack_sensor_proxy!</label>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id18"/>
 			<label kind="synchronisation" x="25" y="102">ack_sensor?</label>
 		</transition>
 		<transition>
-			<source ref="id16"/>
-			<target ref="id15"/>
+			<source ref="id20"/>
+			<target ref="id19"/>
 			<label kind="synchronisation" x="42" y="42">read_sensor!</label>
 		</transition>
 		<transition>
-			<source ref="id17"/>
-			<target ref="id16"/>
+			<source ref="id21"/>
+			<target ref="id20"/>
 			<label kind="synchronisation" x="8" y="-25">read_sensor_proxy?</label>
 		</transition>
 	</template>
@@ -301,117 +390,117 @@ void read_sens(){
 }
 
 </declaration>
-		<location id="id18" x="-2040" y="-2745">
+		<location id="id22" x="-2040" y="-2745">
 		</location>
-		<location id="id19" x="-1997" y="-2422">
+		<location id="id23" x="-1997" y="-2422">
 			<urgent/>
 		</location>
-		<location id="id20" x="-1836" y="-2635">
+		<location id="id24" x="-1836" y="-2635">
 			<urgent/>
 		</location>
-		<location id="id21" x="-2235" y="-2635">
+		<location id="id25" x="-2235" y="-2635">
 		</location>
-		<location id="id22" x="-1836" y="-2550">
+		<location id="id26" x="-1836" y="-2550">
 			<name x="-1938" y="-2558">Cooling_on</name>
 			<urgent/>
 		</location>
-		<location id="id23" x="-1836" y="-2745">
+		<location id="id27" x="-1836" y="-2745">
 			<urgent/>
 		</location>
-		<location id="id24" x="-1836" y="-2423">
+		<location id="id28" x="-1836" y="-2423">
 		</location>
-		<location id="id25" x="-2235" y="-2499">
+		<location id="id29" x="-2235" y="-2499">
 			<name x="-2227" y="-2533">Cooling_off</name>
 			<urgent/>
 		</location>
-		<location id="id26" x="-2235" y="-2329">
+		<location id="id30" x="-2235" y="-2329">
 		</location>
-		<location id="id27" x="-2142" y="-2422">
+		<location id="id31" x="-2142" y="-2422">
 			<name x="-2176" y="-2465">_Check_</name>
 			<urgent/>
 		</location>
-		<location id="id28" x="-2235" y="-2745">
+		<location id="id32" x="-2235" y="-2745">
 			<name x="-2295" y="-2753">_Ctrl_</name>
 			<urgent/>
 		</location>
-		<init ref="id28"/>
+		<init ref="id32"/>
 		<transition>
-			<source ref="id18"/>
-			<target ref="id23"/>
+			<source ref="id22"/>
+			<target ref="id27"/>
 			<label kind="synchronisation" x="-2006" y="-2771">ack_sensor_proxy?</label>
 		</transition>
 		<transition>
-			<source ref="id28"/>
-			<target ref="id18"/>
+			<source ref="id32"/>
+			<target ref="id22"/>
 			<label kind="synchronisation" x="-2201" y="-2771">read_sensor_proxy!</label>
 		</transition>
 		<transition>
-			<source ref="id19"/>
-			<target ref="id24"/>
+			<source ref="id23"/>
+			<target ref="id28"/>
 			<label kind="guard" x="-1963" y="-2397">cnt &lt; 5</label>
 			<nail x="-1997" y="-2380"/>
 			<nail x="-1870" y="-2380"/>
 		</transition>
 		<transition>
-			<source ref="id19"/>
-			<target ref="id27"/>
+			<source ref="id23"/>
+			<target ref="id31"/>
 			<label kind="guard" x="-2108" y="-2439">cnt == 5</label>
 			<label kind="assignment" x="-2108" y="-2456">cnt := 0</label>
 		</transition>
 		<transition>
-			<source ref="id24"/>
-			<target ref="id19"/>
+			<source ref="id28"/>
+			<target ref="id23"/>
 			<label kind="synchronisation" x="-1921" y="-2465">tick?</label>
 			<label kind="assignment" x="-1955" y="-2448">cnt = cnt + 1</label>
 		</transition>
 		<transition>
-			<source ref="id20"/>
-			<target ref="id21"/>
+			<source ref="id24"/>
+			<target ref="id25"/>
 			<label kind="guard" x="-2099" y="-2660">ctrl_sens &lt;= 10</label>
 			<nail x="-2074" y="-2635"/>
 		</transition>
 		<transition>
-			<source ref="id20"/>
-			<target ref="id22"/>
+			<source ref="id24"/>
+			<target ref="id26"/>
 			<label kind="guard" x="-1938" y="-2609">ctrl_sens &gt; 10</label>
 		</transition>
 		<transition>
-			<source ref="id23"/>
-			<target ref="id20"/>
+			<source ref="id27"/>
+			<target ref="id24"/>
 			<label kind="assignment" x="-1963" y="-2703">ctrl_sens = sens</label>
 		</transition>
 		<transition>
-			<source ref="id26"/>
-			<target ref="id24"/>
+			<source ref="id30"/>
+			<target ref="id28"/>
 			<label kind="synchronisation" x="-2065" y="-2354">keep_cooling?</label>
 			<nail x="-2006" y="-2329"/>
 			<nail x="-1980" y="-2329"/>
 			<nail x="-1836" y="-2329"/>
 		</transition>
 		<transition>
-			<source ref="id25"/>
-			<target ref="id21"/>
+			<source ref="id29"/>
+			<target ref="id25"/>
 			<label kind="synchronisation" x="-2227" y="-2592">cool_off_ctrl!</label>
 			<nail x="-2235" y="-2567"/>
 		</transition>
 		<transition>
-			<source ref="id22"/>
-			<target ref="id24"/>
+			<source ref="id26"/>
+			<target ref="id28"/>
 			<label kind="synchronisation" x="-1929" y="-2516">cool_on_ctrl!</label>
 		</transition>
 		<transition>
-			<source ref="id26"/>
-			<target ref="id25"/>
+			<source ref="id30"/>
+			<target ref="id29"/>
 			<label kind="synchronisation" x="-2227" y="-2456">stop?</label>
 		</transition>
 		<transition>
-			<source ref="id27"/>
-			<target ref="id26"/>
+			<source ref="id31"/>
+			<target ref="id30"/>
 			<label kind="synchronisation" x="-2176" y="-2388">sync_ids!</label>
 		</transition>
 		<transition>
-			<source ref="id21"/>
-			<target ref="id28"/>
+			<source ref="id25"/>
+			<target ref="id32"/>
 			<label kind="synchronisation" x="-2227" y="-2703">tick?</label>
 		</transition>
 	</template>
@@ -423,88 +512,88 @@ void read_sens(){
 void read_sens(){
     ids_sens = sens;
 }</declaration>
-		<location id="id29" x="-1487" y="-1505">
+		<location id="id33" x="-1487" y="-1505">
 			<urgent/>
 		</location>
-		<location id="id30" x="-1589" y="-1504">
+		<location id="id34" x="-1589" y="-1504">
 		</location>
-		<location id="id31" x="-1691" y="-1505">
+		<location id="id35" x="-1691" y="-1505">
 			<urgent/>
 		</location>
-		<location id="id32" x="-1784" y="-1700">
+		<location id="id36" x="-1784" y="-1700">
 		</location>
-		<location id="id33" x="-1368" y="-1700">
+		<location id="id37" x="-1368" y="-1700">
 			<urgent/>
 		</location>
-		<location id="id34" x="-1784" y="-1292">
+		<location id="id38" x="-1784" y="-1292">
 		</location>
-		<location id="id35" x="-1572" y="-1292">
+		<location id="id39" x="-1572" y="-1292">
 			<urgent/>
 		</location>
-		<location id="id36" x="-1368" y="-1292">
+		<location id="id40" x="-1368" y="-1292">
 			<urgent/>
 		</location>
-		<location id="id37" x="-1368" y="-1505">
+		<location id="id41" x="-1368" y="-1505">
 			<urgent/>
 		</location>
-		<location id="id38" x="-1784" y="-1505">
+		<location id="id42" x="-1784" y="-1505">
 			<name x="-1852" y="-1513">_IDS_</name>
 		</location>
-		<init ref="id38"/>
-		<transition>
-			<source ref="id29"/>
-			<target ref="id37"/>
-			<label kind="assignment" x="-1487" y="-1487">ids_sens = sens</label>
-		</transition>
-		<transition>
-			<source ref="id30"/>
-			<target ref="id29"/>
-			<label kind="synchronisation" x="-1606" y="-1538">ack_sensor_proxy?</label>
-		</transition>
-		<transition>
-			<source ref="id31"/>
-			<target ref="id30"/>
-			<label kind="synchronisation" x="-1700" y="-1487">read_sensor_proxy!</label>
-		</transition>
-		<transition>
-			<source ref="id38"/>
-			<target ref="id31"/>
-			<label kind="synchronisation" x="-1767" y="-1539">sync_ids?</label>
-		</transition>
-		<transition>
-			<source ref="id37"/>
-			<target ref="id33"/>
-			<label kind="guard" x="-1495" y="-1632">ids_sens &lt;= 10</label>
-		</transition>
+		<init ref="id42"/>
 		<transition>
 			<source ref="id33"/>
-			<target ref="id32"/>
-			<label kind="synchronisation" x="-1597" y="-1726">stop!</label>
-		</transition>
-		<transition>
-			<source ref="id32"/>
-			<target ref="id38"/>
-			<label kind="synchronisation" x="-1784" y="-1641">tick?</label>
+			<target ref="id41"/>
+			<label kind="assignment" x="-1479" y="-1530">ids_sens = sens</label>
 		</transition>
 		<transition>
 			<source ref="id34"/>
-			<target ref="id38"/>
-			<label kind="synchronisation" x="-1784" y="-1394">tick?</label>
+			<target ref="id33"/>
+			<label kind="synchronisation" x="-1606" y="-1538">ack_sensor_proxy?</label>
 		</transition>
 		<transition>
 			<source ref="id35"/>
 			<target ref="id34"/>
-			<label kind="synchronisation" x="-1742" y="-1334">keep_cooling!</label>
-			<label kind="assignment" x="-1742" y="-1317">alarm = false</label>
+			<label kind="synchronisation" x="-1700" y="-1487">read_sensor_proxy!</label>
 		</transition>
 		<transition>
-			<source ref="id36"/>
+			<source ref="id42"/>
 			<target ref="id35"/>
-			<label kind="assignment" x="-1530" y="-1317">alarm = true</label>
+			<label kind="synchronisation" x="-1767" y="-1539">sync_ids?</label>
+		</transition>
+		<transition>
+			<source ref="id41"/>
+			<target ref="id37"/>
+			<label kind="guard" x="-1495" y="-1632">ids_sens &lt;= 10</label>
 		</transition>
 		<transition>
 			<source ref="id37"/>
 			<target ref="id36"/>
+			<label kind="synchronisation" x="-1597" y="-1726">stop!</label>
+		</transition>
+		<transition>
+			<source ref="id36"/>
+			<target ref="id42"/>
+			<label kind="synchronisation" x="-1784" y="-1641">tick?</label>
+		</transition>
+		<transition>
+			<source ref="id38"/>
+			<target ref="id42"/>
+			<label kind="synchronisation" x="-1784" y="-1394">tick?</label>
+		</transition>
+		<transition>
+			<source ref="id39"/>
+			<target ref="id38"/>
+			<label kind="synchronisation" x="-1742" y="-1334">keep_cooling!</label>
+			<label kind="assignment" x="-1742" y="-1317">alarm = false</label>
+		</transition>
+		<transition>
+			<source ref="id40"/>
+			<target ref="id39"/>
+			<label kind="assignment" x="-1530" y="-1317">alarm = true</label>
+		</transition>
+		<transition>
+			<source ref="id41"/>
+			<target ref="id40"/>
 			<label kind="guard" x="-1470" y="-1411">ids_sens &gt; 10</label>
 		</transition>
 	</template>
@@ -521,24 +610,13 @@ proxy_actuator = Malicious_Proxy_Actuator();
 proxy_sensor = Proxy_Sensor();
 ctrl = Ctrl();
 ids = IDS();
+Top_Cm = Top_C_attacker();
 
-system ids, ctrl, proxy_actuator, actuator, proxy_sensor,sensor, stress_engine,engine, global_clock;
-
-
+system ids, ctrl, proxy_actuator, actuator, proxy_sensor,sensor, stress_engine,engine, global_clock, Top_Cm;
 </system>
 	<queries>
 		<query>
-			<formula>simulate 1000 [&lt;=100] {safe, deadlocks}
-			</formula>
-			<comment>
-			</comment>
-		</query>
-		<query>
-			<formula>Pr(&lt;&gt; [1, 300] (not safe))</formula>
-			<comment></comment>
-		</query>
-		<query>
-			<formula>simulate 1000 [&lt;=100] {temp, ctrl_sens}
+			<formula>simulate 1000 [&lt;=100] [temp, ctrl_sens]
 			</formula>
 			<comment>
 			</comment>

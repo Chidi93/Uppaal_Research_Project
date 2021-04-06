@@ -77,11 +77,12 @@ def main():
         content = []
         with open(uppaal_file_name, "r") as uppaal_file:
             content = uppaal_file.readlines()
-            # print [i for i, s in enumerate(content) if content_to_modify in s]
+            #print ([i for i, s in enumerate(content) if content_to_modify in s][0])
             attack_index = [i for i, s in enumerate(content) if content_to_modify in s][0]
             content[attack_index] = "const int M_ATCK = " + str(n) + ";\n"
 
         open(uppaal_file_name, 'w').close()
+
 
         with open(uppaal_file_name, "r+") as uppaal_file:
             for i in content:
@@ -89,19 +90,38 @@ def main():
 
         ######################################################################
         # MODIFY QUERY HERE
-        #query = "Pr([][1,{0}] (safe))".format(n + 4)
-        #query = "Pr(<>[1,{0}] (not safe))".format(n + 1)
+        #query = "Pr([][1,{0}] (safe))".format(n+3) 
+        #query = "Pr(<>[0, {0}] (!safe))".format(n+4)
+        #query = "Pr([][1,{0}] (!alarm))".format(n+4) 
+        query = "Pr(<>[0, {0}] (alarm))".format(n+5)
         #query = "Pr [<=1000] (<> deadlocks )"
         #query = "Pr (<>[0, {0}] (deadlocks))".format(n + 3)
-        #query = "Pr (<> [0, {0}](Cooling_on && global_clock >= 100))".format(n + 1)
-        query =  "Pr (<>[0, {0}] (ctrl.Cooling_on && c_time >={1}))".format(n, n)
+        #query =  "Pr (<>[0, {0}] (ctrl.Cooling_on && c_time >={1}))".format(n, n)
+        #query =  "Pr (<>[0, {0}] (ctrl.Cooling_on && c_time >={1}))".format(n+3, n)
         ######################################################################
+        
+        #Attack 2 querries
+        #Remember to restrict the attack time m within 9..300 interval before running the querries.
+        #query = "Pr([][1,{0}] (safe)".format(n+4)
+        #query = "Pr([][1,{0}] (!deadlock)".format(n+4)
+        #query = "Pr([][1,{0}] (!alarm)".format(n+4)
+        #query = "Pr(<>[1,{0}] (!safe)".format(n+5)
+       
+        #query = "Pr([][0, 1000] (!alarm)" #Stealthy Property
+        
+        #query = "Pr([][{0}, 1000] (deadlocks))".format(n+80) 
+       
+       
+        #query =  "Pr (<>[0, {0}] (ctrl.Cooling_on && c_time >={1}))".format(n, n)
+        #query =  "Pr (<>[0, {0}] (ctrl.Cooling_on && c_time >={1}))".format(n+3, n)
+        ######################################################################
+
 
         print("RUN NUMBER: " + str(n))
         print(query)
 
         # EXECUTE QUERY
-        open(query_file_name, 'w').close()
+        open(query_file_name, 'w+').close()
 
         with open(query_file_name, "r+") as query_file:
             query_file.write("%s" % query)

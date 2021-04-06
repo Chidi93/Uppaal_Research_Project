@@ -1,1 +1,1 @@
-Pr (<>[0, 282] (ctrl.Cooling_on && c_time >=282))
+Pr(<>[0, 152] (alarm))
