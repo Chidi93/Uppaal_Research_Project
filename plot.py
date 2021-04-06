@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 
 
 lines = []
-with open("Safety_Prop_outputFile.txt", "r") as f:
+with open("outputFile.txt", "r") as f:
     lines = f.readlines()
 
 x_arr = []
