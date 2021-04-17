@@ -24,7 +24,7 @@ bool safe = true;
 bool deadlocks = false;
 bool alarm = false;
 
-int M_ATCK = 100;
+const int M_ATCK = 100;
 clock c_time;
 
 double malicious_sensed_temp = 0.0;
@@ -537,6 +537,10 @@ system ids, ctrl, proxy_actuator, actuator, proxy_sensor,sensor, stress_engine,e
 			</formula>
 			<comment>
 			</comment>
+		</query>
+		<query>
+			<formula>Pr([][1, 1000] (!alarm))</formula>
+			<comment></comment>
 		</query>
 	</queries>
 </nta>

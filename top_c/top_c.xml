@@ -262,7 +262,7 @@ deadlocks = (temp &lt; 0 || temp &gt;= 50)</label>
 		<name>Top_C_attacker</name>
 		<location id="id14" x="-119" y="-34">
 			<name x="-144" y="-110">Top_Cm</name>
-			<urgent/>
+			<label kind="exponentialrate" x="-127" y="-17">1</label>
 		</location>
 		<location id="id15" x="-416" y="-34">
 			<urgent/>
@@ -620,6 +620,14 @@ system ids, ctrl, proxy_actuator, actuator, proxy_sensor,sensor, stress_engine,e
 			</formula>
 			<comment>
 			</comment>
+		</query>
+		<query>
+			<formula>Pr([][0, 18] (deadlock &amp;&amp; c_time &gt;= 16))</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>Pr(&lt;&gt;[0, 50] (!safe))</formula>
+			<comment></comment>
 		</query>
 	</queries>
 </nta>

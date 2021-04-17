@@ -16,4 +16,6 @@ for line in lines:
 
 print(x_arr, y_arr)
 plt.plot(x_arr, y_arr, linestyle='--', marker='o', color='r')
+plt.xlabel("Attack Time")
+plt.ylabel("Probability")
 plt.show()

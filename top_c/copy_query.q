@@ -1,1 +1,1 @@
-Pr([][1,4] (safe))
+Pr (<>[0, 1000] (deadlocks && c_time >=4))

@@ -15,10 +15,10 @@ import pickle
 import shutil
 import pathlib as path
 
-
 def parse_out(out):
     out = str(out, 'utf-8')
     lines = out.split("\n")
+    index = 0
     for i, s in enumerate(lines):
         if ("Pr(<> ...)" in s or "Pr(MITL ) in" in s):
             index = i
@@ -26,7 +26,6 @@ def parse_out(out):
     #index = [i for i, s in enumerate(lines) if ("Pr(<> ...)" in s or "Pr(MITL ) in" in s)]
     #index = index[0]
     #print(lines)
-    #print("CHIDI: {}".format(index))
     value = lines[index].split(" ")[-1]
     return value
 
@@ -35,11 +34,11 @@ def main():
     ######################
     # CHANGE PATH HERE
     verifyta_path = ("/home/chidiagbo/uppaal64-4.1.24/bin-Linux/")  # "PATH OF MAIN FOLDER OF UPPAAL" + "uppaal64-4.1.19/bin-Linux/"
-    model_path = ("/home/chidiagbo/Desktop/Uppaal_Research_Project/attack1/")  #PATH OF THE FOLDER OF cps_smc.xml
-    query_path =("/home/chidiagbo/Desktop/Uppaal_Research_Project/attack1/")  # "PATH OF THE FOLDER OF query.q"
+    model_path = ("/home/chidiagbo/Desktop/Uppaal_Research_Project/top_c/")  #PATH OF THE FOLDER OF cps_smc.xml
+    query_path =("/home/chidiagbo/Desktop/Uppaal_Research_Project/top_c/")  # "PATH OF THE FOLDER OF query.q"
     ######################
 
-    model_name = "cps_smc_attack1.xml"
+    model_name = "top_c.xml"
     query_name = "query.q"
 
     uppaal_folder = verifyta_path
@@ -50,8 +49,8 @@ def main():
 
     ######################
     # CHANGE PRECISION HERE
-    alpha = 0.01 #
-    error = 0.01 #
+    alpha = 0.01 # Probability of false negatives
+    error = 0.01 # Probalistic uncertainty
     ######################
 
    #################################################################################################################################
@@ -93,7 +92,7 @@ def main():
         #query = "Pr([][1,{0}] (safe))".format(n+3) 
         #query = "Pr(<>[0, {0}] (!safe))".format(n+4)
         #query = "Pr([][1,{0}] (!alarm))".format(n+4) 
-        query = "Pr(<>[0, {0}] (alarm))".format(n+5)
+        #query = "Pr(<>[0, {0}] (alarm))".format(n+5)
         #query = "Pr [<=1000] (<> deadlocks )"
         #query = "Pr (<>[0, {0}] (deadlocks))".format(n + 3)
         #query =  "Pr (<>[0, {0}] (ctrl.Cooling_on && c_time >={1}))".format(n, n)
@@ -102,18 +101,22 @@ def main():
         
         #Attack 2 querries
         #Remember to restrict the attack time m within 9..300 interval before running the querries.
-        #query = "Pr([][1,{0}] (safe)".format(n+4)
-        #query = "Pr([][1,{0}] (!deadlock)".format(n+4)
-        #query = "Pr([][1,{0}] (!alarm)".format(n+4)
-        #query = "Pr(<>[1,{0}] (!safe)".format(n+5)
+        #query = "Pr(<>[1,{0}] (safe))".format(n+4)
+        #query = "Pr([][{}, 1000] (deadlocks))".format(n+1)
+        #query = "Pr([][1,{0}] (!deadlock))".format(n+4)
+        #query = "Pr([][1,{0}] (!alarm))".format(n+4)
+        #query = "Pr(<>[1,{0}] (!safe))".format(n+5)
        
-        #query = "Pr([][0, 1000] (!alarm)" #Stealthy Property
-        
+        #query = "Pr([][0, 1000] (!alarm))" #Stealthy Property
+        #query = "Pr(<>[0,{0}] (!safe && {1} <= c_time && c_time <= {0}))".format(n+11, n+1)
+        #query = "Pr(<>[0, n+11] (!safe && n+1 <= c_time <= n+11"
         #query = "Pr([][{0}, 1000] (deadlocks))".format(n+80) 
        
-       
+       #top c attack queries
+        #query = "Pr(<>[0, {}] (deadlocks && c_time >= {}))".format(n+3, n+1)
         #query =  "Pr (<>[0, {0}] (ctrl.Cooling_on && c_time >={1}))".format(n, n)
         #query =  "Pr (<>[0, {0}] (ctrl.Cooling_on && c_time >={1}))".format(n+3, n)
+        query =  "Pr (<>[0, 1000] (deadlocks && c_time >={}))".format(n+3)
         ######################################################################
 
 

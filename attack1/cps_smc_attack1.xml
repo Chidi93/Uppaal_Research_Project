@@ -543,5 +543,9 @@ system ids, ctrl, proxy_actuator, actuator, proxy_sensor,sensor, stress_engine,e
 			<comment>
 			</comment>
 		</query>
+		<query>
+			<formula>Pr([][1,1000] (!alarm))</formula>
+			<comment></comment>
+		</query>
 	</queries>
 </nta>

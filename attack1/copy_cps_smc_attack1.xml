@@ -23,7 +23,7 @@ bool safe = true;
 bool deadlocks = false;
 bool alarm = false;
 
-const int M_ATCK = 147;
+const int M_ATCK = 1;
 clock c_time;
 
 //const double alpha = 0.01;
